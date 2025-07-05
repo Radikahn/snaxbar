@@ -268,6 +268,24 @@ public class Notes {
         
         return "";
     }
+
+
+    // Handle special commands
+    private static boolean handleSpecialCommand(String command) {
+        if (command.equalsIgnoreCase("clear")) {
+            // Clear all notes content
+            noteText = "";
+            cursorPosition = 0;
+            saveNotesToServer(); // Auto-save after clearing
+            return true;
+        }
+        
+        // Add more special commands here in the future
+        // if (command.equalsIgnoreCase("help")) { ... }
+        // if (command.startsWith("config ")) { ... }
+        
+        return false; // Not a special command
+    }
     
     // Get the end position of the current line
     private static int getLineEnd(int position) {
@@ -632,7 +650,14 @@ public class Notes {
         if (isAIQueryLine()) {
             String query = extractAIQuery();
             if (!query.isEmpty() && !isWaitingForResponse) {
-                // Remove the query line and process the AI request
+                // Check for special commands first
+                if (handleSpecialCommand(query)) {
+                    // Remove the command line
+                    removeCurrentAIQueryLine();
+                    return;
+                }
+                
+                // If not a special command, treat as AI query
                 removeCurrentAIQueryLine();
                 handleAIQuery(query);
                 return;
@@ -683,10 +708,10 @@ public class Notes {
             case GLFW.GLFW_KEY_DOWN:
                 windowHeight = Math.min(MAX_HEIGHT, windowHeight + RESIZE_STEP);
                 return true;
-            case GLFW.GLFW_KEY_LEFT:
+            case GLFW.GLFW_KEY_RIGHT:
                 windowWidth = Math.min(MAX_WIDTH, windowWidth + RESIZE_STEP);
                 return true;
-            case GLFW.GLFW_KEY_RIGHT:
+            case GLFW.GLFW_KEY_LEFT:
                 windowWidth = Math.max(MIN_WIDTH, windowWidth - RESIZE_STEP);
                 return true;
         }
@@ -1014,7 +1039,7 @@ public class Notes {
                     case GLFW.GLFW_KEY_1: return '!';
                     case GLFW.GLFW_KEY_2: return '@';
                     case GLFW.GLFW_KEY_3: return '#';
-                    case GLFW.GLFW_KEY_4: return ' ';
+                    case GLFW.GLFW_KEY_4: return  ' ';
                     case GLFW.GLFW_KEY_5: return '%';
                     case GLFW.GLFW_KEY_6: return '^';
                     case GLFW.GLFW_KEY_7: return '&';
@@ -1087,7 +1112,9 @@ public class Notes {
                 int color = 0xFFFFFFFF; // Default white
                 
                 // Color AI queries differently
-                if (line.trim().startsWith("/")) {
+                if (line.trim().startsWith("/clear")) {
+                    color = 0xFFFF6B6B; // Light red for clear command
+                } else if (line.trim().startsWith("/")) {
                     color = 0xFF00FFFF; // Cyan for AI queries
                 } else if (line.trim().startsWith(">")) {
                     color = 0xFF90EE90; // Light green for AI query display
@@ -1115,6 +1142,7 @@ public class Notes {
                 guiGraphics.drawString(Minecraft.getInstance().font, "F8 to move", x + 3, y + 13, 0xFFAAAAAA);
                 guiGraphics.drawString(Minecraft.getInstance().font, "F9 to hide", x + 3, y + 23, 0xFFAAAAAA);
                 guiGraphics.drawString(Minecraft.getInstance().font, "Type /question for AI", x + 3, y + 33, 0xFF00FFFF);
+                guiGraphics.drawString(Minecraft.getInstance().font, "Type /clear to reset", x + 3, y + 43, 0xFFFF6B6B);
             }
         }
     }

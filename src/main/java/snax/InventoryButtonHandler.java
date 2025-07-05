@@ -1,5 +1,6 @@
 package snax;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
@@ -26,8 +27,8 @@ public class InventoryButtonHandler {
         int inventoryLeft = (screenWidth - 176) / 2; // 176 is inventory width
         int inventoryTop = (screenHeight - 166) / 2; // 166 is inventory height
         
-        // Create config button
-        Button configButton = Button.builder(
+        // Create the main Snax button
+        Button snaxButton = Button.builder(
             Component.literal("Snax"),
             button -> {
                 inventoryScreen.getMinecraft().setScreen(new ConfigScreen(inventoryScreen));
@@ -35,6 +36,15 @@ public class InventoryButtonHandler {
             .bounds(inventoryLeft + 180, inventoryTop + 4, 40, 20) // Right side of inventory
             .build();
         
-        event.addListener(configButton);
+        // Create the AI Settings button below the Snax button
+        Button settingsButton = Button.builder(
+            Component.literal("AI Settings"), 
+            (button) -> {
+                Minecraft.getInstance().setScreen(new SettingsScreen(inventoryScreen));
+            }
+        ).bounds(inventoryLeft + 180, inventoryTop + 26, 60, 20).build(); // Below snax button
+        
+        event.addListener(snaxButton);
+        event.addListener(settingsButton);
     }
 }

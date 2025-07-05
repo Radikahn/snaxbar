@@ -55,6 +55,8 @@ public class Notes {
     
     // NBT key for storing notes data
     private static final String NOTES_NBT_KEY = "snax_notes_text";
+    private static final String OLLAMA_URL_NBT_KEY = "snax_ollama_url";
+    private static final String DEFAULT_MODEL_NBT_KEY = "snax_default_model";
     
     // Client-side state
     private static String noteText = "";
@@ -67,9 +69,9 @@ public class Notes {
     private static final long AUTO_SAVE_INTERVAL = 30000; // 30 seconds
     private static boolean networkInitialized = false;
     
-    // Ollama integration variables
-    private static final String OLLAMA_BASE_URL = "http://127.0.0.1:11434"; // Default Ollama URL
-    private static final String DEFAULT_MODEL = "llama3:latest"; // Default model, can be changed
+    // Ollama integration variables (now configurable)
+    private static String OLLAMA_BASE_URL = "http://127.0.0.1:11434"; // Default Ollama URL
+    private static String DEFAULT_MODEL = "llama3:latest"; // Default model, can be changed
     private static final HttpClient httpClient = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(10))
             .build();
@@ -97,6 +99,48 @@ public class Notes {
     
     // Server-side storage for notes
     private static final Map<UUID, String> serverNotes = new HashMap<>();
+    
+    // Configuration getters and setters
+    public static String getOllamaBaseUrl() {
+        return OLLAMA_BASE_URL;
+    }
+
+    public static void setOllamaBaseUrl(String url) {
+        OLLAMA_BASE_URL = url;
+        saveConfiguration();
+    }
+
+    public static String getDefaultModel() {
+        return DEFAULT_MODEL;
+    }
+
+    public static void setDefaultModel(String model) {
+        DEFAULT_MODEL = model;
+        saveConfiguration();
+    }
+
+    // Configuration persistence methods
+    private static void saveConfiguration() {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player != null) {
+            CompoundTag playerData = mc.player.getPersistentData();
+            playerData.putString(OLLAMA_URL_NBT_KEY, OLLAMA_BASE_URL);
+            playerData.putString(DEFAULT_MODEL_NBT_KEY, DEFAULT_MODEL);
+        }
+    }
+
+    private static void loadConfiguration() {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player != null) {
+            CompoundTag playerData = mc.player.getPersistentData();
+            if (playerData.contains(OLLAMA_URL_NBT_KEY)) {
+                OLLAMA_BASE_URL = playerData.getString(OLLAMA_URL_NBT_KEY);
+            }
+            if (playerData.contains(DEFAULT_MODEL_NBT_KEY)) {
+                DEFAULT_MODEL = playerData.getString(DEFAULT_MODEL_NBT_KEY);
+            }
+        }
+    }
     
     // Ollama API classes
     public static class OllamaRequest {
@@ -476,6 +520,11 @@ public class Notes {
                     }
                 }
             }
+            
+            // Load configuration on client side
+            if (event.getEntity().level().isClientSide) {
+                loadConfiguration();
+            }
         }
         
         @SubscribeEvent
@@ -708,10 +757,10 @@ public class Notes {
             case GLFW.GLFW_KEY_DOWN:
                 windowHeight = Math.min(MAX_HEIGHT, windowHeight + RESIZE_STEP);
                 return true;
-            case GLFW.GLFW_KEY_RIGHT:
+            case GLFW.GLFW_KEY_LEFT:
                 windowWidth = Math.min(MAX_WIDTH, windowWidth + RESIZE_STEP);
                 return true;
-            case GLFW.GLFW_KEY_LEFT:
+            case GLFW.GLFW_KEY_RIGHT:
                 windowWidth = Math.max(MIN_WIDTH, windowWidth - RESIZE_STEP);
                 return true;
         }
@@ -842,6 +891,13 @@ public class Notes {
             }
             
             // Set the event result to deny further processing
+            event.setResult(Event.Result.DENY);
+            return;
+        }
+        
+        // Open settings screen with F7 key
+        if (event.getKey() == GLFW.GLFW_KEY_F7) {
+            mc.setScreen(new SettingsScreen(mc.screen));
             event.setResult(Event.Result.DENY);
             return;
         }
@@ -1141,8 +1197,9 @@ public class Notes {
                 guiGraphics.drawString(Minecraft.getInstance().font, "F10 to edit", x + 3, y + 3, 0xFFAAAAAA);
                 guiGraphics.drawString(Minecraft.getInstance().font, "F8 to move", x + 3, y + 13, 0xFFAAAAAA);
                 guiGraphics.drawString(Minecraft.getInstance().font, "F9 to hide", x + 3, y + 23, 0xFFAAAAAA);
-                guiGraphics.drawString(Minecraft.getInstance().font, "Type /question for AI", x + 3, y + 33, 0xFF00FFFF);
-                guiGraphics.drawString(Minecraft.getInstance().font, "Type /clear to reset", x + 3, y + 43, 0xFFFF6B6B);
+                guiGraphics.drawString(Minecraft.getInstance().font, "F7 settings", x + 3, y + 33, 0xFFFFFFFF);
+                guiGraphics.drawString(Minecraft.getInstance().font, "Type /question for AI", x + 3, y + 43, 0xFF00FFFF);
+                guiGraphics.drawString(Minecraft.getInstance().font, "Type /clear to reset", x + 3, y + 53, 0xFFFF6B6B);
             }
         }
     }

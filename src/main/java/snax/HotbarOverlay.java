@@ -1,10 +1,10 @@
 package snax;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.level.GameType;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -43,7 +43,11 @@ public class HotbarOverlay {
         ItemStack slot9Item = player.getInventory().getItem(9);
         ItemStack slot10Item = player.getInventory().getItem(10);
         
+
+
+        
         //Check the location in which the items should be rendered
+
 
         //first check if they are in creative (health bar covers items if they arent moved up)
         //I don't trust this gameMode.getPlayerMode() so I am going to wrap it up
@@ -108,3 +112,4 @@ public class HotbarOverlay {
         }
     }
 }
+

@@ -14,6 +14,7 @@ public class SnaxBarMod {
         MinecraftForge.EVENT_BUS.register(new KeyInputHandler());
         MinecraftForge.EVENT_BUS.register(new HotbarOverlay());
         MinecraftForge.EVENT_BUS.register(new InventoryButtonHandler());
+        MinecraftForge.EVENT_BUS.register(new Notes());
     }
 
 

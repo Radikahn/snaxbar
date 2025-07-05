@@ -19,21 +19,37 @@ public class KeyInputHandler {
         }
     }
     
-    private static void swapWithSelected(int inventorySlot) {
-        Player player = Minecraft.getInstance().player;
-        if (player == null) return;
+
+private static void swapWithSelected(int inventorySlot) {
         
-        // Get the currently selected hotbar slot
-        int selectedSlot = player.getInventory().selected;
-        
-        // Validate inventory slot range (slots 9-35 are the main inventory)
-        if (inventorySlot < 9 || inventorySlot > 35) return;
-        
-        var inv = player.getInventory();
-        ItemStack fromInv = inv.getItem(inventorySlot);
-        ItemStack fromHotbar = inv.getItem(selectedSlot);
-        
-        inv.setItem(selectedSlot, fromInv);
-        inv.setItem(inventorySlot, fromHotbar);
+    Minecraft mc = Minecraft.getInstance();
+    Player player = mc.player;
+    if (player == null) return;
+
+    int selectedSlot = player.getInventory().selected;
+
+    if (inventorySlot < 9 || inventorySlot > 35) return;
+
+    var inv = player.getInventory();
+
+    ItemStack fromInv = inv.getItem(inventorySlot);
+    ItemStack fromHotbar = inv.getItem(selectedSlot);
+
+    //this swap is just clientside, must also sync server
+    inv.setItem(selectedSlot, fromInv);
+    inv.setItem(inventorySlot, fromHotbar);
+
+    //sync player state to server (or else selected block state on server and user will collide)
+    if (mc.gameMode != null) {
+
+        mc.gameMode.handleInventoryMouseClick(
+            player.inventoryMenu.containerId,
+            inventorySlot,
+            selectedSlot,
+            net.minecraft.world.inventory.ClickType.SWAP,
+            player
+        );
+    }
+
     }
 }

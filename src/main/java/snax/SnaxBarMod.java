@@ -27,7 +27,6 @@ public class SnaxBarMod {
 
         AppRegister app = new AppRegister();
 
-        System.out.println(app.configPath);
         // Initialize PlayerController (if needed)
         // PlayerController should work without explicit initialization
     }

@@ -131,8 +131,9 @@ dependencies {
     // then special handling is done to allow a setup of a vanilla dependency without the use of an external repository.
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-
-    implementation 'com.moandjiezana.toml:toml4j:0.7.2' // Use the latest stable version
+    // Bundle TOML library into the mod jar
+    implementation jarJar(group: 'com.moandjiezana.toml', name: 'toml4j', version: '[0.7.2,0.8.0)')
+    jarJar(group: 'com.moandjiezana.toml', name: 'toml4j', version: '[0.7.2,0.8.0)')
 
     // Example mod dependency with JEI - using fg.deobf() ensures the dependency is remapped to your development mappings
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
@@ -182,6 +183,9 @@ tasks.named('jar', Jar).configure {
                 'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
+
+    // Enable jarJar to bundle dependencies
+    jarJar.enable()
 
     // This is the preferred method to reobfuscate your jar file
     finalizedBy 'reobfJar'

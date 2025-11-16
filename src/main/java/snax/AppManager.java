@@ -1,14 +1,47 @@
 package snax;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class AppManager {
     // TODO: add support for multi arg command
 
-    private ArrayList<SnaxApp> registeredApps = new ArrayList<SnaxApp>();
+    private static AppRegister appRepo = new AppRegister();
 
-    public AppManager() {
+    public static boolean checkReop(String command) {
 
+        try {
+            // implement error handling because there are cases in which toml might be
+            // corrupted.
+            List<String> repo = appRepo.appMaster.registrations;
+
+            if (repo == null) {
+                System.out.println("[SNAXAPP]: The app repo is null/empty");
+                return false;
+            }
+
+            for (String installedApp : repo) {
+
+                if (command.equalsIgnoreCase(installedApp)) {
+                    System.out.println("DEBUG: Executing clear command");
+                    Notes.setNoteText("");
+                    Notes.setCursorPosition(0);
+                    NetworkManager.saveNotesToServer();
+                    return true;
+                }
+
+            }
+
+            System.out.println("DEBUG: Not a special command, returning false");
+            return false;
+        }
+
+        catch (Exception e) {
+            System.out.println("Failed view repo due to registration issues");
+            e.printStackTrace();
+        }
+
+        return false;
     }
 
     /**
@@ -24,16 +57,6 @@ public class AppManager {
     public static boolean handleSpecialCommand(String command) {
         System.out.println("DEBUG: Checking special command: '" + command + "'");
 
-        if (command.equalsIgnoreCase("clear")) {
-            System.out.println("DEBUG: Executing clear command");
-            Notes.setNoteText("");
-            Notes.setCursorPosition(0);
-            NetworkManager.saveNotesToServer();
-            return true;
-        }
-
-        System.out.println("DEBUG: Not a special command, returning false");
-        return false; // Not a special command
+        return checkReop(command);
     }
-
 }

@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Specification-Title: snaxbar
+Specification-Vendor: Radikahn
+Specification-Version: 1
+Implementation-Title: snaxbar
+Implementation-Version: 1.0.0
+Implementation-Vendor: Radikahn
+Implementation-Timestamp: 2025-11-15T16:08:01-0800
+

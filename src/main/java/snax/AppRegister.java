@@ -11,11 +11,15 @@ public class AppRegister {
 
     public String configPath;
 
+    public RegistrationParser appMaster;
+
     public AppRegister() {
 
         System.out.println(
                 "===============================Running startup service for SnaxAppRegistration===============================");
         this.configPath = buildConfigPath(isUnix(this.mainPath));
+
+        this.appMaster = new RegistrationParser(new File(this.configPath));
 
     }
 

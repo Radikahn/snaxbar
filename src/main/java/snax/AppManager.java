@@ -8,8 +8,32 @@ public class AppManager {
 
     private static AppRegister appRepo = new AppRegister();
 
-    public static boolean checkReop(String command) {
+    private static void clearNotes() {
+        System.out.println("Executing clear command");
+        Notes.setNoteText("");
+        Notes.setCursorPosition(0);
+        NetworkManager.saveNotesToServer();
+    }
 
+    public static void getApp(String name) {
+        try {
+
+            Class<?> appClass = Class.forName("snax." + name);
+            SnaxApp wrapper = (SnaxApp) appClass.getDeclaredConstructor().newInstance();
+
+            System.out.println("Running app " + appClass.getName());
+            wrapper.process();
+
+        }
+
+        catch (Exception e) {
+            e.printStackTrace();
+
+        }
+
+    }
+
+    public static boolean checkReop(String command) {
         try {
             // implement error handling because there are cases in which toml might be
             // corrupted.
@@ -20,13 +44,16 @@ public class AppManager {
                 return false;
             }
 
+            // custom case for the clear command as it does not need an app registration
+            if (command.equalsIgnoreCase("clear")) {
+                clearNotes();
+                return true;
+            }
+
             for (String installedApp : repo) {
 
                 if (command.equalsIgnoreCase(installedApp)) {
-                    System.out.println("DEBUG: Executing clear command");
-                    Notes.setNoteText("");
-                    Notes.setCursorPosition(0);
-                    NetworkManager.saveNotesToServer();
+                    getApp(installedApp);
                     return true;
                 }
 

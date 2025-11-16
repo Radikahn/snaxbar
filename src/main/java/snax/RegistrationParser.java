@@ -19,7 +19,7 @@ public class RegistrationParser {
 
         else {
 
-            System.out.println("Preview of registrations for confirmation" + this.registrations);
+            System.out.println("Preview of registrations for confirmation " + this.registrations);
         }
     }
 

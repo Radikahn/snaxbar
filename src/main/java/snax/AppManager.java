@@ -17,7 +17,6 @@ public class AppManager {
 
     public static void getApp(String name) {
         try {
-
             Class<?> appClass = Class.forName("snax." + name);
             SnaxApp wrapper = (SnaxApp) appClass.getDeclaredConstructor().newInstance();
 
@@ -33,7 +32,7 @@ public class AppManager {
 
     }
 
-    public static boolean checkReop(String command) {
+    public static boolean checkRepo(String command) {
         try {
             // implement error handling because there are cases in which toml might be
             // corrupted.
@@ -84,6 +83,6 @@ public class AppManager {
     public static boolean handleSpecialCommand(String command) {
         System.out.println("DEBUG: Checking special command: '" + command + "'");
 
-        return checkReop(command);
+        return checkRepo(command);
     }
 }

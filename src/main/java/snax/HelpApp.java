@@ -1,12 +1,12 @@
 package snax;
 
-public class Help extends SnaxApp {
+public class HelpApp extends SnaxApp {
 
     private String helpText;
 
-    public Help() {
+    public HelpApp() {
 
-        super("Help");
+        super("helpapp");
 
         this.helpText = "\n=== Available Commands ===\n" +
                 "/clear - Clear all notes\n" +

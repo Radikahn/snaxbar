@@ -1,0 +1,11 @@
+* Snax App Dev Logs
+
+
+The general app framework is complete
+
+Here are plans for future implementation
+
+** Rust api for downloading new java modules?
+- My question behind this is can we add code items to the jar post compile and runtime?
+- Basically I want to call upon code that is downloaded live, it doesn't neccessariy need to be compiled within the original jar
+- I want to make this API service in rust

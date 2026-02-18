@@ -16,7 +16,7 @@ public class SnaxBarMod {
         MinecraftForge.EVENT_BUS.register(new InventoryButtonHandler());
         MinecraftForge.EVENT_BUS.register(Notes.class);
         MinecraftForge.EVENT_BUS.register(NetworkManager.CommonEvents.class);
-        
+
         // Register for mod setup event
         net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
     }
@@ -24,7 +24,9 @@ public class SnaxBarMod {
     private void setup(final FMLCommonSetupEvent event) {
         // Initialize network
         NetworkManager.initNetwork();
-        
+
+        AppRegister app = new AppRegister();
+
         // Initialize PlayerController (if needed)
         // PlayerController should work without explicit initialization
     }
